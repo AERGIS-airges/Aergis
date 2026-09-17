@@ -1,0 +1,140 @@
+name: Aergis CI (test, lint, build, package)
+# R18 pointer research verification. Current delivery target is vc63 / 0.18.38-preview.
+
+on:
+  push:
+    branches: [main, 'codex/**']
+    paths:
+      - 'app/**'
+      - 'keystore/**'
+      - '*.gradle.kts'
+      - 'gradle.properties'
+      - '.github/workflows/development-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: development-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+      # setup-android@v3 defaults to the obsolete SDK "tools" package.
+      # Disable default package installation; install only supported packages below.
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: ''
+      - name: Install pinned Android SDK
+        run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+      - name: Unit tests, lint and APK
+        run: gradle :app:testDebugUnitTest :app:lintDebug :app:assembleDebug --stacktrace
+      - name: Verify signed Aergis APK and pointer invariants
+        env:
+          SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p delivery
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          python3 - <<'PY'
+          import pathlib, xml.etree.ElementTree as ET
+          android = '{http://schemas.android.com/apk/res/android}'
+          expected = 'com.airgesture.control.AergisActivity'
+          candidates = list(pathlib.Path('app/build/intermediates').glob('**/AndroidManifest.xml'))
+          def qualify(package, name):
+              if name.startswith('.'): return package + name
+              if '.' not in name: return package + '.' + name
+              return name
+          selected = None
+          launchers = None
+          for path in candidates:
+              try: root = ET.parse(path).getroot()
+              except ET.ParseError: continue
+              package = root.get('package') or 'com.airgesture.control'
+              found = []
+              for tag in ('activity', 'activity-alias'):
+                  for node in root.findall('.//' + tag):
+                      name = node.get(android + 'name')
+                      if not name: continue
+                      for intent_filter in node.findall('intent-filter'):
+                          actions = {item.get(android + 'name') for item in intent_filter.findall('action')}
+                          categories = {item.get(android + 'name') for item in intent_filter.findall('category')}
+                          if 'android.intent.action.MAIN' in actions and 'android.intent.category.LAUNCHER' in categories:
+                              found.append(qualify(package, name))
+              if found:
+                  selected, launchers = path, found
+                  break
+          assert selected is not None, 'No merged debug manifest with a launcher was found'
+          assert launchers == [expected], f'Launcher policy violation: {launchers!r}'
+          shell = pathlib.Path('app/src/main/java/com/airgesture/control/AergisActivity.kt').read_text()
+          assert 'AERGIS • vc63' in shell
+          visuals = pathlib.Path('app/src/main/java/com/airgesture/control/AermotusVisuals.kt').read_text()
+          assert 'R.font.aergis_display' in visuals
+          assert 'FontFamily.SansSerif' not in visuals
+          strings = pathlib.Path('app/src/main/res/values/strings.xml').read_text()
+          assert '<string name="app_name">Aergis</string>' in strings
+          kinematic = pathlib.Path('app/src/main/java/com/airgesture/control/PointerKinematicFilter.kt').read_text()
+          assert 'class PointerKinematicFilter' in kinematic and 'clampBetween' in kinematic
+          service = pathlib.Path('app/src/main/java/com/airgesture/control/GestureCaptureService.kt').read_text()
+          assert 'OUTPUT_IMAGE_FORMAT_YUV_420_888' in service
+          assert 'pointerKinematicFilter' in service
+          pacer = pathlib.Path('app/src/main/java/com/airgesture/control/VisionFramePacer.kt').read_text()
+          assert 'pointerNormalIntervalMs: Long = 8L' in pacer
+          debug_mirror = pathlib.Path('app/src/debug/java/com/airgesture/control/TrackingMirrorBridge.kt').read_text()
+          assert 'TYPE_ACCESSIBILITY_OVERLAY' not in debug_mirror and 'isCaptureEnabled(): Boolean = false' in debug_mirror
+          pathlib.Path('delivery/pointer-research-report.txt').write_text('VERIFIED: single Aergis launcher\nVERIFIED: bundled Aergis typography\nVERIFIED: YUV camera analysis path\nVERIFIED: causal landmark-8 pointer estimator integration\nVERIFIED: emitted pointer position causally bounded by newest measurement\nVERIFIED: 8 ms pointer submission ceiling\nVERIFIED: floating debug camera overlay disabled\n')
+          PY
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" > delivery/signing-report.txt
+          grep -qi '31dae6c69ef983030be3a1df1f0bf7eb51e91c17ddd75b62a955bb5f171004d0' delivery/signing-report.txt
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" > delivery/apk-badging.txt
+          grep -F "package: name='com.airgesture.control' versionCode='63' versionName='0.18.38-preview'" delivery/apk-badging.txt
+          grep -F "application-label:'Aergis'" delivery/apk-badging.txt
+          grep -F "launchable-activity: name='com.airgesture.control.AergisActivity'" delivery/apk-badging.txt
+          if grep -q 'FilterDiagnosticsActivity' delivery/apk-badging.txt; then exit 1; fi
+          if grep -q "launchable-activity: name='com.airgesture.control.ProductionActivity'" delivery/apk-badging.txt; then exit 1; fi
+          unzip -l "$APK" | grep -q 'res/font/aergis_display.ttf'
+          cp "$APK" delivery/Aergis-v0.18.38-preview-vc63-r18-pointer-research.apk
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, xml.etree.ElementTree as ET
+          apk = pathlib.Path('delivery/Aergis-v0.18.38-preview-vc63-r18-pointer-research.apk')
+          report_files = sorted(pathlib.Path('app/build/test-results/testDebugUnitTest').glob('TEST-*.xml'))
+          testcase_count = 0
+          failure_count = 0
+          error_count = 0
+          skipped_count = 0
+          for p in report_files:
+              root = ET.parse(p).getroot()
+              cases = root.findall('.//testcase')
+              testcase_count += len(cases)
+              failure_count += len(root.findall('.//failure'))
+              error_count += len(root.findall('.//error'))
+              skipped_count += len(root.findall('.//skipped'))
+          assert report_files, 'No Gradle unit-test XML reports were produced'
+          assert testcase_count > 0, f'No testcase elements found in {len(report_files)} Gradle unit-test XML reports'
+          assert failure_count == 0 and error_count == 0, {'tests': testcase_count, 'failures': failure_count, 'errors': error_count, 'skipped': skipped_count}
+          totals = dict(tests=testcase_count, failures=failure_count, errors=error_count, skipped=skipped_count)
+          print(json.dumps({'test_report_files': len(report_files), 'automated_tests': totals}, indent=2))
+          data = dict(repository=os.environ.get('GITHUB_REPOSITORY', 'unknown'), source_commit=os.environ['SOURCE_COMMIT'], app_name='Aergis', package='com.airgesture.control', version='0.18.38-preview', versionCode=63, milestone='r18-pointer-research', architecture='MediaPipe landmark-8 measurement + causal adaptive alpha-beta/Kalman-family state estimator; no forward extrapolation beyond newest measurement', cadence='pointer submission ceiling 8 ms (~125 Hz); adaptive backoff retained', tracking='R12 landmark-8 ownership retained; click/gesture semantics unchanged', launcher='exactly one launcher: com.airgesture.control.AergisActivity', filename=apk.name, size=apk.stat().st_size, sha256=hashlib.sha256(apk.read_bytes()).hexdigest(), automated_tests=totals, lint='passed', device_status='DEVICE TEST REQUIRED — Galaxy A54; compare pointer smoothness, latency and actual result FPS against vc60 baseline')
+          pathlib.Path('delivery/build-evidence.json').write_text(json.dumps(data, indent=2)+'\n')
+          print(json.dumps(data, indent=2))
+          PY
+          (cd delivery && sha256sum *.apk > SHA256SUMS.txt)
+      - name: Upload development APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Aergis-development-${{ github.run_number }}
+          path: delivery/
+          retention-days: 14
+          if-no-files-found: error

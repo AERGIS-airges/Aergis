@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Aergis</string>
+    <string name="accessibility_description">Controls Android with deliberate mid-air hand gestures. The front camera runs only after you start Aergis, hand recognition stays on-device, and each recognized gesture performs one immediate user-configured action. No routines or chained automations.</string>
+</resources>

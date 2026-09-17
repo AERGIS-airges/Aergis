@@ -1,0 +1,42 @@
+name: Validate Agent Skills
+
+on:
+  push:
+    paths:
+      - '.agents/skills/**'
+      - '.github/workflows/validate-agent-skills.yml'
+  pull_request:
+    paths:
+      - '.agents/skills/**'
+      - '.github/workflows/validate-agent-skills.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install Agent Skills reference validator
+        run: python -m pip install 'skills-ref @ git+https://github.com/agentskills/agentskills.git#subdirectory=skills-ref'
+
+      - name: Validate every project skill
+        shell: bash
+        run: |
+          set -euo pipefail
+          found=0
+          while IFS= read -r -d '' skill_dir; do
+            found=1
+            echo "Validating ${skill_dir}"
+            skills-ref validate "${skill_dir}"
+          done < <(find .agents/skills -mindepth 1 -maxdepth 1 -type d -print0 | sort -z)
+          test "${found}" -eq 1

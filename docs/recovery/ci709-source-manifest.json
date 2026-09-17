@@ -1,0 +1,534 @@
+{
+  "historical_source": "744d8372a6127fe0f065a5cbb4b4d946ca19844b",
+  "app_tree": "6b2c519db230c29a2e6a214fd0435a22ea4609ff",
+  "files": [
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "sha": "7cc7c4f82fe257324e2f43aad6d0d967dbca9f67",
+      "size": 103
+    },
+    {
+      "path": "app/build.gradle.kts",
+      "mode": "100644",
+      "sha": "83c6fffb0eb82e06e702f2e9065e4279983a7ca5",
+      "size": 6846
+    },
+    {
+      "path": "app/proguard-rules.pro",
+      "mode": "100644",
+      "sha": "a48af7964e025bde52d1774da819cfbe5eaeb84f",
+      "size": 48
+    },
+    {
+      "path": "app/src/debug/java/com/airgesture/control/TrackingMirrorBridge.kt",
+      "mode": "100644",
+      "sha": "1ff87226d2874e98718d71c72a86679196ae8a0b",
+      "size": 23936
+    },
+    {
+      "path": "app/src/main/AndroidManifest.xml",
+      "mode": "100644",
+      "sha": "f27ffd58edeaf88682648744a46457a7832b0a44",
+      "size": 2105
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/ActionMappingStore.kt",
+      "mode": "100644",
+      "sha": "6b61c325a71152d49196ae7b6b4dc1302b3baba5",
+      "size": 7963
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/AirAccessibilityService.kt",
+      "mode": "100644",
+      "sha": "b762418da618bf3e1d613882e2f28c113e845c66",
+      "size": 55711
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/AirActionCapabilities.kt",
+      "mode": "100644",
+      "sha": "2d391819b4ce9ea8ab9e322d5ca794c798e16a15",
+      "size": 280
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/AirModels.kt",
+      "mode": "100644",
+      "sha": "af532215ee8e26d0228397102a9db018bfdccecf",
+      "size": 19095
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/CenterGateSwipeDetector.kt",
+      "mode": "100644",
+      "sha": "23b174082c7701174273377ffb39b94fe773e0df",
+      "size": 20426
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/ControlHandSelector.kt",
+      "mode": "100644",
+      "sha": "047cd7331cae216945be9f2228eb53a252e57aa2",
+      "size": 21999
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/CursorOverlayView.kt",
+      "mode": "100644",
+      "sha": "82c9567f2f1d170d1e0ba8da6b465abe86f49d39",
+      "size": 1737
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/GestureCaptureService.kt",
+      "mode": "100644",
+      "sha": "eac0c5761fb79d813c1f2becb6d254b23dbfc145",
+      "size": 114036
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/GestureInterpreter.kt",
+      "mode": "100644",
+      "sha": "6f1bd512616683b2e3cfc4eecd20e0894698cc32",
+      "size": 27219
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/HandIdentitySignature.kt",
+      "mode": "100644",
+      "sha": "a6e76d09d55da678aad18dc58937e3aae2fd8a0c",
+      "size": 2850
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/InteractionArbiter.kt",
+      "mode": "100644",
+      "sha": "8ed27386dcfeeaf9babe374b09c1a849d883a861",
+      "size": 2152
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/LandmarkGeometryGuard.kt",
+      "mode": "100644",
+      "sha": "da50df47c9cfda064275ee80147ad53d7f32e969",
+      "size": 935
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/LandmarkPoseRecognizer.kt",
+      "mode": "100644",
+      "sha": "aa3bb254b8b44daf353fdfdefbf0661d50d8c417",
+      "size": 32257
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/LandmarkReplay.kt",
+      "mode": "100644",
+      "sha": "4be99969d63697298303d4d0c0033148167132a8",
+      "size": 8489
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/MainActivity.kt",
+      "mode": "100644",
+      "sha": "46120e0638f0ac67747987610e33314c30c9e804",
+      "size": 78146
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/NativeGraphCloseGuard.kt",
+      "mode": "100644",
+      "sha": "1bb86e0c0b2e05d649aa2821d453289265bf1144",
+      "size": 1285
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/PointerAimEstimator.kt",
+      "mode": "100644",
+      "sha": "31fcdc7e24060fe8838f6d267bd59700750a6580",
+      "size": 10818
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/PointerCalibration.kt",
+      "mode": "100644",
+      "sha": "f2239bd731d8fbfef83a402afcadab1e49909c30",
+      "size": 4984
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/PointerCalibrationSession.kt",
+      "mode": "100644",
+      "sha": "bcb4aafe90f4f02749d9af224a021d07eaa8adde",
+      "size": 707
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/PointerMotionFilter.kt",
+      "mode": "100644",
+      "sha": "88562612673641c848b91e94c130fefce30043d9",
+      "size": 6820
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/PointerScreenCoordinateMapper.kt",
+      "mode": "100644",
+      "sha": "9344c6d69b62fa4ea43182687b83f394b9c801ea",
+      "size": 2076
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/PointerTracker.kt",
+      "mode": "100644",
+      "sha": "55b5889b5791155b6ff78c9320cedb5875a157ae",
+      "size": 25305
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/PoseCategoryArbiter.kt",
+      "mode": "100644",
+      "sha": "1424818add1fe6b49c750b9ab1e3b618273441ec",
+      "size": 6669
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/SessionStartPolicy.kt",
+      "mode": "100644",
+      "sha": "14b6358ca2bddd1b5845656785077e94d6b33bf7",
+      "size": 1011
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/TouchActionCoordinator.kt",
+      "mode": "100644",
+      "sha": "e47525cf34b5ef7f1495d3780a7347e2579d5a70",
+      "size": 1584
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/UsableVisionGapPolicy.kt",
+      "mode": "100644",
+      "sha": "67fb37edeb958f4b24e21a66564b45bcc457f18f",
+      "size": 713
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/VisionCoordinateMapper.kt",
+      "mode": "100644",
+      "sha": "e7613464e8671ff792b16fa7b2ca0c95ef0b9607",
+      "size": 3940
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/VisionDelegatePolicy.kt",
+      "mode": "100644",
+      "sha": "590dbee742ea6e7dc8d897bca694ec2d365d888f",
+      "size": 625
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/VisionFramePacer.kt",
+      "mode": "100644",
+      "sha": "041902c0a2446df582c4e8f78a82aa9712b27754",
+      "size": 1623
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/VisionInputPolicy.kt",
+      "mode": "100644",
+      "sha": "822ea4e44fb1950d23254914d1c9c1ca888ece8b",
+      "size": 900
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/VisionLatencyPolicy.kt",
+      "mode": "100644",
+      "sha": "1633f9415b312910fb12236a1cf64dcaa49159a0",
+      "size": 1222
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/VisionPerformanceMonitor.kt",
+      "mode": "100644",
+      "sha": "c3c67a85d3dbfd57005e43a4a401d2bae29ef180",
+      "size": 4777
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/VisionPipelineBenchmark.kt",
+      "mode": "100644",
+      "sha": "9c39bf51d1717d609b1f8dec3afd9685d79deede",
+      "size": 3472
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/VisionWatchdogPolicy.kt",
+      "mode": "100644",
+      "sha": "2ba9a35e0c4478c7fa9770dbc9ba8ba5873576d6",
+      "size": 528
+    },
+    {
+      "path": "app/src/main/java/com/airgesture/control/WorldHandGeometryValidator.kt",
+      "mode": "100644",
+      "sha": "312520105e29784573d5015a86fcf9efd4f43cd0",
+      "size": 9763
+    },
+    {
+      "path": "app/src/main/res/drawable/ic_launcher_background.xml",
+      "mode": "100644",
+      "sha": "397392c71cb8841bce3b33f9cbc86b2571dcf56e",
+      "size": 400
+    },
+    {
+      "path": "app/src/main/res/drawable/ic_launcher_foreground.xml",
+      "mode": "100644",
+      "sha": "84bef83d3f5efd781ed290c89eb7bc86f64ad461",
+      "size": 2015
+    },
+    {
+      "path": "app/src/main/res/drawable/ic_launcher_monochrome.xml",
+      "mode": "100644",
+      "sha": "966151d8d0fa00b0e57ee44c3e357417f49c6020",
+      "size": 934
+    },
+    {
+      "path": "app/src/main/res/drawable/ic_notification_air_control.xml",
+      "mode": "100644",
+      "sha": "da492eb13e7ef7c8a456c4f9e1cbc25690d77ee5",
+      "size": 1037
+    },
+    {
+      "path": "app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+      "mode": "100644",
+      "sha": "6b78462d615bfe7003b31d0534dcad416b75ad25",
+      "size": 273
+    },
+    {
+      "path": "app/src/main/res/mipmap-anydpi-v33/ic_launcher.xml",
+      "mode": "100644",
+      "sha": "8fde45638ac86d7eaeea3d6cc170ab0bf8587dd4",
+      "size": 344
+    },
+    {
+      "path": "app/src/main/res/values/colors.xml",
+      "mode": "100644",
+      "sha": "0ada45755812f32e8876f0289fb9b256c29dbbf8",
+      "size": 118
+    },
+    {
+      "path": "app/src/main/res/values/strings.xml",
+      "mode": "100644",
+      "sha": "5b0e0a4ac105fecb55e7dd6f8668ef667b840abb",
+      "size": 461
+    },
+    {
+      "path": "app/src/main/res/xml/air_accessibility_service.xml",
+      "mode": "100644",
+      "sha": "bd692d5793bce5c99e24e43db4415fd158f63d98",
+      "size": 524
+    },
+    {
+      "path": "app/src/main/res/xml/backup_rules.xml",
+      "mode": "100644",
+      "sha": "49fc980ef50bd21ce3d3f8ca5f1680f7760c7b55",
+      "size": 487
+    },
+    {
+      "path": "app/src/main/res/xml/data_extraction_rules.xml",
+      "mode": "100644",
+      "sha": "b853a8d2452fe340b2e07d1899f3437e49fb123b",
+      "size": 1050
+    },
+    {
+      "path": "app/src/release/java/com/airgesture/control/TrackingMirrorBridge.kt",
+      "mode": "100644",
+      "sha": "60a8f5591e5ded4e2cf2a19de9a77482104a1eb3",
+      "size": 1475
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/AirActionCapabilitiesTest.kt",
+      "mode": "100644",
+      "sha": "129dce3659ec96fc7297ef4998145aacde8d2589",
+      "size": 1006
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/AirRuntimeTest.kt",
+      "mode": "100644",
+      "sha": "3e7a4025754da024650766f426bd5c65a61bb081",
+      "size": 6825
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/CenterGateSwipeDetectorTest.kt",
+      "mode": "100644",
+      "sha": "01ecdbdb9ee494cd84c2ed50f9e8a0ab3795f61c",
+      "size": 14144
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/ControlHandSelectorTest.kt",
+      "mode": "100644",
+      "sha": "8f26914d96d5e9f07355748194b94343256aec8e",
+      "size": 17060
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/DefaultMappingsTest.kt",
+      "mode": "100644",
+      "sha": "b16800902df31ac1f8b7aa88f316c38d57715f7b",
+      "size": 2511
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/DirectionalNavigationGestureTest.kt",
+      "mode": "100644",
+      "sha": "71f5dd78e2e02d1fe23c715171463dd273515c9b",
+      "size": 5192
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/GestureInterpreterTest.kt",
+      "mode": "100644",
+      "sha": "c57bf66f4ea7ea01e0f36e59e5f4e0156ebd8e44",
+      "size": 26993
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/HandIdentitySignatureTest.kt",
+      "mode": "100644",
+      "sha": "d491c51f7029295018dbaa00e1832f20aa981a17",
+      "size": 2536
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/InteractionArbiterTest.kt",
+      "mode": "100644",
+      "sha": "af5595c5bfd0cf88c9fa8fcde1821ea2a8e7df9f",
+      "size": 4700
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/LandmarkGeometryGuardTest.kt",
+      "mode": "100644",
+      "sha": "67d5dfa0261edfd5a06aa355b6aeb10bda743bb6",
+      "size": 1928
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/LandmarkPoseRecognizerTest.kt",
+      "mode": "100644",
+      "sha": "b0b3fafee1a6d0ac52389eb982367e7f7e0beba8",
+      "size": 16419
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/LandmarkReplayTest.kt",
+      "mode": "100644",
+      "sha": "678885b2c4f249809b08a8d28701d305d7924d40",
+      "size": 6102
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/NativeGraphCloseGuardTest.kt",
+      "mode": "100644",
+      "sha": "88b93a1fc826844d05710ca57903910d5fa6db96",
+      "size": 854
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/PointerAimEstimatorTest.kt",
+      "mode": "100644",
+      "sha": "ccb4032ecb9edbbc359d7c28fedbc952976df3b4",
+      "size": 7267
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/PointerCalibrationTest.kt",
+      "mode": "100644",
+      "sha": "788f5d8124db110100ebf1108579417cc40445db",
+      "size": 6811
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/PointerMotionFilterTest.kt",
+      "mode": "100644",
+      "sha": "3664fb7db93b38a78e446119dd3558eed3c7f636",
+      "size": 3604
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/PointerPipelineRegressionTest.kt",
+      "mode": "100644",
+      "sha": "bba8721481e74d825c33ef7e4f7c0f39501aed86",
+      "size": 3057
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/PointerScreenCoordinateMapperTest.kt",
+      "mode": "100644",
+      "sha": "a3539a2bf68db6887db5a97edd983c89f0e6202f",
+      "size": 4096
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/PointerTrackerTest.kt",
+      "mode": "100644",
+      "sha": "4277a7ba83a37482e082a39f46fb67e5baa623c4",
+      "size": 14964
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/PoseCategoryArbiterTest.kt",
+      "mode": "100644",
+      "sha": "6ad2fcd39b8c808d3266c9c760e917b413288a97",
+      "size": 9677
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/SessionStartPolicyTest.kt",
+      "mode": "100644",
+      "sha": "6efe68e8afa48ce55ee09ef31ea3077ff6966751",
+      "size": 1488
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/TouchActionCoordinatorTest.kt",
+      "mode": "100644",
+      "sha": "2235647f3544889dbc8808b53f21da039a569e7d",
+      "size": 2304
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/UsableVisionGapPolicyTest.kt",
+      "mode": "100644",
+      "sha": "ac193f154848f63bc636f0963e4fa6568c944c9c",
+      "size": 1749
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/VisionCoordinateMapperTest.kt",
+      "mode": "100644",
+      "sha": "40331d9c458481aded14c458b33e8073bb361411",
+      "size": 4513
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/VisionDelegatePolicyTest.kt",
+      "mode": "100644",
+      "sha": "995272e4058106923dd9f1b7fc7f5eff5b1034ff",
+      "size": 885
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/VisionFramePacerTest.kt",
+      "mode": "100644",
+      "sha": "15bfa7c64f6a65f38447c6cd63b231fa0c820cd1",
+      "size": 2592
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/VisionInputPolicyTest.kt",
+      "mode": "100644",
+      "sha": "7819098210b3ac733698370d3dd6cc9ea691e5da",
+      "size": 1405
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/VisionLatencyPolicyTest.kt",
+      "mode": "100644",
+      "sha": "99bfdb8848304329dad882e6e0142a1271c9d182",
+      "size": 1455
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/VisionPerformanceMonitorTest.kt",
+      "mode": "100644",
+      "sha": "327afe01da52cdf470a6df396e3646ec394025b2",
+      "size": 3436
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/VisionPipelineBenchmarkTest.kt",
+      "mode": "100644",
+      "sha": "102618ae4b4affe65ee5adbcb141101bef3fdd2c",
+      "size": 2848
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/VisionWatchdogPolicyTest.kt",
+      "mode": "100644",
+      "sha": "2d484bc73ffd6fc80bb1af9b09abab66d1aec97e",
+      "size": 1205
+    },
+    {
+      "path": "app/src/test/java/com/airgesture/control/WorldHandGeometryValidatorTest.kt",
+      "mode": "100644",
+      "sha": "86ac2529d5f70cf94dba68d2dcd81b6f5bb47beb",
+      "size": 7880
+    },
+    {
+      "path": "build.gradle.kts",
+      "mode": "100644",
+      "sha": "3946c9b2eb96946f827507dc9ae9ddc1a1875b9e",
+      "size": 218
+    },
+    {
+      "path": "gradle.properties",
+      "mode": "100644",
+      "sha": "19a34955e01cd3d53f46f434273b6755530e171e",
+      "size": 133
+    },
+    {
+      "path": "keystore/airgesture-preview.jks",
+      "mode": "100644",
+      "sha": "b6e6018e6b5e1af976bc4d683d574c7212bb447c",
+      "size": 2188
+    },
+    {
+      "path": "settings.gradle.kts",
+      "mode": "100644",
+      "sha": "d25aa12242f6f9770ed530ee933590ce595df3da",
+      "size": 337
+    }
+  ]
+}
