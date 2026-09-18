@@ -121,17 +121,6 @@ class AergisActivity : ComponentActivity() {
                         FeatureRail(runtime)
 
                         when (selectedTab) {
-                            val context = LocalContext.current
-
-Button(
-    onClick = {
-        val intent = Intent(context, GestureMappingActivity::class.java)
-        context.startActivity(intent)
-    }
-) {
-    Text("Open Gesture Mapping")
-}
-
                             AergisTab.CONTROL -> ControlScreen(runtime, permissionLauncher)
                             AergisTab.PRACTICE -> PracticeScreen(runtime)
                             AergisTab.SETUP -> SetupScreen(runtime, store)
@@ -637,7 +626,7 @@ Button(
                         color = AermotusPalette.TextPrimary,
                         style = MaterialTheme.typography.titleMedium
                     )
-                    Text("›", color = AermotusPalette.Gold, style = MaterialTheme.typography.titleLarge)
+                    Text(">", color = AermotusPalette.Gold, style = MaterialTheme.typography.titleLarge)
                 }
             }
         }
@@ -1027,12 +1016,5 @@ Button(
             serviceInfo.packageName == packageName &&
                 serviceInfo.name == AirAccessibilityService::class.java.name
         }
-    }
-
-    private enum class AergisTab(val label: String, val symbol: String) {
-        CONTROL("Control", "◉"),
-        PRACTICE("Practice", "✦"),
-        SETUP("Setup", "◇"),
-        SYSTEM("System", "⋯")
     }
 }
