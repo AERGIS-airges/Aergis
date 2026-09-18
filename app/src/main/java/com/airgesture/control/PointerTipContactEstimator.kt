@@ -25,7 +25,7 @@ data class PointerTipContactResult(
  * the camera view changes due to hand orientation.
  */
 object PointerTipContactEstimator {
-    private const val MIN_CLICK_FINGER_STRAIGHTNESS = 0.72f
+    private const val MIN_CLICK_FINGER_STRAIGHTNESS = 0.55f
 
     fun estimate(
         imageHand: List<AimLandmark>,
