@@ -121,6 +121,17 @@ class AergisActivity : ComponentActivity() {
                         FeatureRail(runtime)
 
                         when (selectedTab) {
+                            val context = LocalContext.current
+
+Button(
+    onClick = {
+        val intent = Intent(context, GestureMappingActivity::class.java)
+        context.startActivity(intent)
+    }
+) {
+    Text("Open Gesture Mapping")
+}
+
                             AergisTab.CONTROL -> ControlScreen(runtime, permissionLauncher)
                             AergisTab.PRACTICE -> PracticeScreen(runtime)
                             AergisTab.SETUP -> SetupScreen(runtime, store)
