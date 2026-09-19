@@ -39,6 +39,16 @@ class PointerAimEstimator(
     private var lastValidTipX: Float? = null
     private var lastValidTipY: Float? = null
 
+    init {
+        require(
+            acceptedCoordinateMargin.isFinite() &&
+                acceptedCoordinateMargin >= 0f &&
+                acceptedCoordinateMargin <= 1f
+        ) {
+            "Accepted pointer-coordinate margin must be finite and in [0, 1]"
+        }
+    }
+
     fun estimate(input: PointerAimInput): PointerAimResult {
         val tip = input.indexTip
         if (nonFinite(tip)) {
@@ -47,20 +57,22 @@ class PointerAimEstimator(
             )
         }
 
-        // MediaPipe can briefly produce a point just outside the normalized
-        // image. Keep the small, documented margin, but fail closed on a
-        // detector glitch instead of converting an arbitrary outlier into a
-        // valid cursor sample. The motion filter should only receive samples
-        // that have passed this semantic boundary check.
+        // Reject semantically impossible detector output before it reaches the
+        // smoothing pipeline. A small margin tolerates camera-edge landmarks;
+        // values beyond it are treated as a lost sample, not clamped motion.
         if (
-            tip.x !in -acceptedCoordinateMargin..(1f + acceptedCoordinateMargin) ||
-            tip.y !in -acceptedCoordinateMargin..(1f + acceptedCoordinateMargin)
+            tip.x < -acceptedCoordinateMargin ||
+            tip.x > 1f + acceptedCoordinateMargin ||
+            tip.y < -acceptedCoordinateMargin ||
+            tip.y > 1f + acceptedCoordinateMargin
         ) {
             return invalidResult(
                 "Index fingertip #8 outside camera bounds • holding last valid fingertip"
             )
         }
 
+        // The estimator owns the normalized-space boundary. Downstream code
+        // receives only canonical [0, 1] position measurements.
         val targetX = tip.x.coerceIn(0f, 1f)
         val targetY = tip.y.coerceIn(0f, 1f)
         lastValidTipX = targetX
