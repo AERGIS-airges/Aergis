@@ -34,6 +34,13 @@ jobs:
       - uses: android-actions/setup-android@v3
         with:
           packages: ''
+      - name: Cache Android SDK packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.ANDROID_HOME }}/platforms
+            ${{ env.ANDROID_HOME }}/build-tools
+          key: android-sdk-${{ runner.os }}-platform-android-36-build-tools-36.0.0
       - name: Install pinned Android SDK
         run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
       - uses: gradle/actions/setup-gradle@v4
