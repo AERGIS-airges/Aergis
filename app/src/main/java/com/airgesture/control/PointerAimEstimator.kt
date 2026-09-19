@@ -33,7 +33,9 @@ data class PointerAimResult(
  *
  * Click recognition lives in a separate index-tip/middle-tip contact channel.
  */
-class PointerAimEstimator {
+class PointerAimEstimator(
+    private val acceptedCoordinateMargin: Float = 0.20f
+) {
     private var lastValidTipX: Float? = null
     private var lastValidTipY: Float? = null
 
@@ -45,8 +47,22 @@ class PointerAimEstimator {
             )
         }
 
-        val targetX = tip.x.coerceIn(-0.20f, 1.20f)
-        val targetY = tip.y.coerceIn(-0.20f, 1.20f)
+        // MediaPipe can briefly produce a point just outside the normalized
+        // image. Keep the small, documented margin, but fail closed on a
+        // detector glitch instead of converting an arbitrary outlier into a
+        // valid cursor sample. The motion filter should only receive samples
+        // that have passed this semantic boundary check.
+        if (
+            tip.x !in -acceptedCoordinateMargin..(1f + acceptedCoordinateMargin) ||
+            tip.y !in -acceptedCoordinateMargin..(1f + acceptedCoordinateMargin)
+        ) {
+            return invalidResult(
+                "Index fingertip #8 outside camera bounds • holding last valid fingertip"
+            )
+        }
+
+        val targetX = tip.x.coerceIn(0f, 1f)
+        val targetY = tip.y.coerceIn(0f, 1f)
         lastValidTipX = targetX
         lastValidTipY = targetY
 
