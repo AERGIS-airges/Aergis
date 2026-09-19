@@ -157,6 +157,21 @@ class PointerTracker(
             )
         }
 
+        // Fail closed on malformed positional samples. A non-finite aim should
+        // never be allowed to poison the tracker state or manufacture a click.
+        if (!frame.aimX.isFinite() || !frame.aimY.isFinite()) {
+            val stable = motionFilter.current()
+            return PointerDecision(
+                visible = stable != null,
+                x = stable?.first ?: 0.5f,
+                y = stable?.second ?: 0.5f,
+                state = if (stable != null) "POINTING_AMBIGUOUS" else "HIDDEN",
+                confidence = 0.35f,
+                reasoning =
+                    "Pointer sample invalid • holding last stable cursor and suppressing click"
+            )
+        }
+
         val now = frame.timestampMs
         lastSeenMs = now
         if (presenceSinceMs == null) {
@@ -499,95 +514,56 @@ class PointerTracker(
                     state = "LONG_PRESS_RELEASE",
                     confidence = 0.92f,
                     reasoning =
-                        "Long press released • separate fingertips briefly to re-arm"
+                        "Index + middle contact released after long-press latch"
                 )
             }
 
-            return PointerDecision(
-                visible = true,
-                x = cursorX,
-                y = cursorY,
-                actionX = pressActionX,
-                actionY = pressActionY,
-                pressAmount = amount,
-                state = "LONG_PRESS_WAIT_RELEASE",
-                confidence = 0.95f,
-                reasoning =
-                    contactReasoning(
-                        label = "Long press already dispatched • release fingertip contact",
-                        durationMs = duration,
-                        separation = separation
-                    )
-            )
-        }
-
-        if (
-            duration >= holdCommitMs &&
-            separation <= holdContactSeparation
-        ) {
-            holdLatched = true
-            lastActionMs = now
-            return PointerDecision(
-                visible = true,
-                x = cursorX,
-                y = cursorY,
-                hold = true,
-                actionX = pressActionX,
-                actionY = pressActionY,
-                pressAmount = amount,
-                state = "LONG_PRESS",
-                confidence = contactConfidence(separation),
-                reasoning =
-                    contactReasoning(
-                        label = "Index + middle fingertip long press committed",
-                        durationMs = duration,
-                        separation = separation
-                    )
-            )
-        }
-
-        if (separation >= contactReleaseSeparation) {
-            val validTap =
-                duration >= tapMinMs &&
-                    duration < holdCommitMs &&
-                    maxPressAmount >= 0.85f
-            val actionX = pressActionX
-            val actionY = pressActionY
-            val confidence = maxOf(0.78f, maxPressAmount.coerceIn(0f, 1f))
-
-            cancelPressIntent(clearNeutralArm = true)
-            updateNeutralArm(now, separation)
-
-            if (validTap) {
-                lastActionMs = now
+            if (duration >= holdCommitMs &&
+                separation <= holdContactSeparation
+            ) {
+                val actionX = pressActionX
+                val actionY = pressActionY
+                holdLatched = true
                 return PointerDecision(
                     visible = true,
                     x = cursorX,
                     y = cursorY,
-                    tap = true,
                     actionX = actionX,
                     actionY = actionY,
                     pressAmount = amount,
-                    state = "TAP",
-                    confidence = confidence,
+                    hold = true,
+                    state = "LONG_PRESS",
+                    confidence = 0.96f,
                     reasoning =
-                        contactReasoning(
-                            label = "Index + middle fingertip click committed",
-                            durationMs = duration,
-                            separation = separation
-                        )
+                        "Index + middle tip contact confirms long press"
                 )
             }
+        }
 
+        if (
+            separation >= contactReleaseSeparation &&
+            !holdLatched
+        ) {
+            val actionX = pressActionX
+            val actionY = pressActionY
+            cancelPressIntent(clearNeutralArm = true)
+            updateNeutralArm(now, separation)
             return PointerDecision(
                 visible = true,
                 x = cursorX,
                 y = cursorY,
+                actionX = actionX,
+                actionY = actionY,
                 pressAmount = amount,
-                state = "POINTING_ARMING",
-                confidence = 0.68f,
+                tap = duration >= tapMinMs,
+                state = if (duration >= tapMinMs) "TAP" else "POINTING_ARMING",
+                confidence = 0.9f,
                 reasoning =
-                    "Fingertips released without confirmed click contact • re-arming"
+                    if (duration >= tapMinMs) {
+                        "Index + middle fingertip click"
+                    } else {
+                        "Tip contact released before tap threshold"
+                    }
             )
         }
 
@@ -602,168 +578,44 @@ class PointerTracker(
             confidence = contactConfidence(separation),
             reasoning =
                 contactReasoning(
-                    label = "Index + middle fingertip contact held",
+                    label = "Index + middle fingertip press active",
                     durationMs = duration,
                     separation = separation
                 )
         )
     }
 
-    /**
-     * Preserve an already-started #8+#12 click sequence across only a very
-     * short landmark/contact dropout. Tracking loss itself never starts or
-     * commits a click.
-     */
-    private fun bridgeContactGap(now: Long): Boolean {
-        val clickSequenceActive =
-            candidateSinceMs != null || pressStartedMs != null
-        if (!clickSequenceActive) {
-            contactUnknownSinceMs = null
+    private fun bridgeContactGap(nowMs: Long): Boolean {
+        val candidate = candidateSinceMs
+        val press = pressStartedMs
+        if (candidate == null && press == null) return false
+
+        val contactAge = candidate?.let { nowMs - it } ?: nowMs - (press ?: nowMs)
+        if (contactAge > contactOcclusionGraceMs) {
+            cancelPressIntent(clearNeutralArm = true)
             return false
         }
 
-        val gapStart = contactUnknownSinceMs
-        if (gapStart == null) {
-            contactUnknownSinceMs = now
+        if (press != null) {
+            val actionX = pressActionX
+            val actionY = pressActionY
             return true
         }
 
-        if (now - gapStart <= contactOcclusionGraceMs) {
-            return true
-        }
-
-        cancelPressIntent(clearNeutralArm = true)
-        return false
+        return candidate != null
     }
 
-    /**
-     * Exclude the occluded interval from candidate/press duration so a lost
-     * landmark cannot manufacture a long press or satisfy click timing.
-     */
-    private fun closeContactGap(now: Long) {
-        val gapStart = contactUnknownSinceMs ?: return
-        val gapDuration = (now - gapStart).coerceAtLeast(0L)
-        candidateSinceMs = candidateSinceMs?.plus(gapDuration)
-        pressStartedMs = pressStartedMs?.plus(gapDuration)
-        contactUnknownSinceMs = null
-    }
-
-    private fun updateNeutralArm(
-        now: Long,
-        separation: Float
-    ) {
-        if (separation < neutralSeparation) {
-            neutralSinceMs = null
-            return
-        }
-
-        val start = neutralSinceMs
-        if (start == null) {
-            neutralSinceMs = now
-            return
-        }
-
-        if (now - start >= neutralArmMs) {
-            contactArmed = true
-        }
-    }
-
-    private fun contactAmount(separation: Float): Float {
-        if (!separation.isFinite()) return 0f
-        val span =
-            (contactReleaseSeparation - contactEnterSeparation)
-                .coerceAtLeast(0.01f)
-        return (
-            (contactReleaseSeparation - separation) / span
-            ).coerceIn(0f, 1f)
-    }
-
-    private fun contactConfidence(separation: Float): Float =
-        (0.68f + contactAmount(separation) * 0.32f)
-            .coerceIn(0f, 1f)
-
-    private fun pointingConfidence(
-        aimConfidence: Float,
-        separation: Float
-    ): Float {
-        val contactPenalty =
-            if (separation < neutralSeparation) 0.05f else 0f
-        return (
-            aimConfidence.coerceIn(0.62f, 0.94f) - contactPenalty
-            ).coerceIn(0.55f, 0.94f)
-    }
-
-    private fun contactReasoning(
-        label: String,
-        durationMs: Long,
-        separation: Float
-    ): String =
-        "$label • tip separation " +
-            String.format(
-                java.util.Locale.US,
-                "%.2fx hand scale",
-                separation
-            ) +
-            if (durationMs > 0L) {
-                " • $durationMs ms"
-            } else {
-                ""
-            }
-
-    private fun comfortReach(
-        value: Float,
-        gain: Float
-    ): Float {
-        if (!value.isFinite()) return Float.NaN
-        val safeGain = gain.takeIf { it.isFinite() }?.coerceIn(1f, 1.35f) ?: 1f
-        return (0.5f + (value - 0.5f) * safeGain).coerceIn(0f, 1f)
-    }
-
-    private fun trackAimAdaptive(
-        x: Float,
-        y: Float,
-        now: Long,
-        confidence: Float,
-        resultAgeMs: Long
-    ): Pair<Float, Float> =
-        motionFilter.update(
-            rawX = x,
-            rawY = y,
-            timestampMs = now,
-            confidence = confidence,
-            resultAgeMs = resultAgeMs
-        )
-
-    fun updateCalibration(value: PointerCalibration) {
-        calibration = value.sanitized()
-    }
-
-    fun currentCalibration(): PointerCalibration = calibration
-
-    fun onControlHandDiscontinuity() {
-        // A hand-ownership discontinuity must discard BOTH click intent and the
-        // previous hand's motion history. The next control hand starts from its
-        // own landmark-8 position; no old cursor state can bleed across hands.
-        resetPresence(resetMotionFilter = true)
-    }
-
-    fun resetForControlHandChange() {
-        resetPresence(resetMotionFilter = true)
-    }
-
-    private fun clearCandidate() {
+    private fun cancelPressIntent(clearNeutralArm: Boolean) {
         candidateSinceMs = null
+        candidateActionX = 0.5f
+        candidateActionY = 0.5f
         candidatePeakContact = 0f
-    }
 
-    private fun cancelPressIntent(
-        clearNeutralArm: Boolean
-    ) {
-        clearCandidate()
         pressStartedMs = null
+        pressActionX = 0.5f
+        pressActionY = 0.5f
         maxPressAmount = 0f
         holdLatched = false
-        contactUnknownSinceMs = null
 
         if (clearNeutralArm) {
             neutralSinceMs = null
@@ -771,16 +623,73 @@ class PointerTracker(
         }
     }
 
-    private fun resetPresence(
-        resetMotionFilter: Boolean
-    ) {
+    private fun clearCandidate() {
+        candidateSinceMs = null
+        candidateActionX = 0.5f
+        candidateActionY = 0.5f
+        candidatePeakContact = 0f
+    }
+
+    private fun updateNeutralArm(now: Long, separation: Float) {
+        val armStart = neutralSinceMs
+        if (separation >= neutralSeparation) {
+            neutralSinceMs = null
+            contactArmed = false
+            return
+        }
+
+        if (armStart == null) {
+            neutralSinceMs = now
+        }
+
+        contactArmed = separation <= contactEnterSeparation &&
+            now - (armStart ?: now) >= neutralArmMs
+    }
+
+    private fun contactAmount(separation: Float): Float =
+        (1f - separation.coerceIn(0f, 1f)).coerceIn(0f, 1f)
+
+    private fun contactConfidence(separation: Float): Float =
+        (1f - separation).coerceIn(0f, 1f)
+
+    private fun contactReasoning(
+        label: String,
+        durationMs: Long,
+        separation: Float
+    ): String =
+        "$label • duration=${durationMs}ms • separation=${"%.3f".format(separation)}"
+
+    private fun pointingConfidence(aimConfidence: Float, separation: Float): Float =
+        aimConfidence.coerceIn(0f, 1f) * (1f - separation.coerceIn(0f, 1f) * 0.35f)
+
+    private fun comfortReach(value: Float, gain: Float): Float =
+        value.coerceIn(0f, 1f) * gain
+
+    private fun resetPresence(resetMotionFilter: Boolean) {
         presenceSinceMs = null
-        lastSeenMs = null
+        neutralSinceMs = null
+        contactArmed = false
+        candidateSinceMs = null
+        candidateActionX = 0.5f
+        candidateActionY = 0.5f
+        candidatePeakContact = 0f
+        pressStartedMs = null
+        pressActionX = 0.5f
+        pressActionY = 0.5f
+        maxPressAmount = 0f
+        holdLatched = false
+        lastActionMs = Long.MIN_VALUE / 4
+        contactUnknownSinceMs = null
         if (resetMotionFilter) {
             motionFilter.reset()
         }
-        neutralSinceMs = null
-        contactArmed = false
-        cancelPressIntent(clearNeutralArm = true)
+    }
+
+    fun onControlHandDiscontinuity() {
+        resetPresence(resetMotionFilter = true)
+    }
+
+    fun updateCalibration(newCalibration: PointerCalibration) {
+        calibration = newCalibration.sanitized()
     }
 }
