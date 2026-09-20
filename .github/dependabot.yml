@@ -16,6 +16,13 @@ updates:
       testing:
         patterns:
           - "junit:*"
+    ignore:
+      - dependency-name: "com.android.application"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "com.android.library"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "org.jetbrains.kotlin.android"
+      - dependency-name: "org.jetbrains.kotlin.plugin.compose"
 
   - package-ecosystem: github-actions
     directory: "/"
