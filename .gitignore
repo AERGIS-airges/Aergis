@@ -4,4 +4,10 @@ local.properties
 .idea/
 *.iml
 .DS_Store
+.kotlin/
+captures/
+.externalNativeBuild/
+.cxx/
+keystore.properties
+*.jks
 app/src/main/assets/gesture_recognizer.task
