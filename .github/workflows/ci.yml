@@ -9,6 +9,7 @@ on:
       - 'keystore/**'
       - '*.gradle.kts'
       - 'gradle.properties'
+      - '.github/workflows/ci.yml'
       - '.github/workflows/development-apk.yml'
   workflow_dispatch:
 
