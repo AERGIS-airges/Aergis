@@ -57,11 +57,12 @@ available and worth the trade-off.
 
 ## Immediate next action
 
-1. Push this repository to GitHub (see the setup guide) and let `ci.yml` run once, untouched, to
-   confirm the checked-out tree still builds green under a brand-new Actions environment with no
-   inherited cache/history.
-2. Install the resulting debug APK on a real device and actually run through the pointer/gesture
-   flow. Nothing else in this file should be trusted as "working" until that happens — everything
-   above is source-level claims plus CI, not device-verified behavior.
-3. Only after that: pick one item from the cleanup backlog or the camera-FPS investigation and do
-   it as its own isolated change with its own CI run.
+1. CI recovery (in progress): AGP was pinned to 9.3.1 (compatible with Kotlin 2.4.20).
+   The remaining failure is the AGP 9.x built-in Kotlin conflict — remove the explicit
+   `org.jetbrains.kotlin.android` plugin from both the root and `app` build files while
+   keeping `org.jetbrains.kotlin.plugin.compose`. After that change, re-run `ci.yml`.
+2. Once CI is green, install the resulting debug APK on a real device and measure
+   camera → MediaPipe result FPS, pointer latency, jitter, and false-click rate.
+   Nothing in this file should be trusted as “working” until that happens.
+3. Only after device data exists: pick one item from the cleanup backlog or the
+   camera-FPS investigation and do it as its own isolated change with its own CI run.
