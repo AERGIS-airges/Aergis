@@ -605,6 +605,33 @@ class PointerTracker(
         return candidate != null
     }
 
+    private fun trackAimAdaptive(
+        x: Float,
+        y: Float,
+        now: Long,
+        confidence: Float,
+        resultAgeMs: Long
+    ): Pair<Float, Float> =
+        motionFilter.update(
+            rawX = x,
+            rawY = y,
+            timestampMs = now,
+            confidence = confidence,
+            resultAgeMs = resultAgeMs
+        )
+
+    /**
+     * Exclude the occluded interval from candidate/press duration so a lost
+     * landmark cannot manufacture a long press or satisfy click timing.
+     */
+    private fun closeContactGap(now: Long) {
+        val gapStart = contactUnknownSinceMs ?: return
+        val gapDuration = (now - gapStart).coerceAtLeast(0L)
+        candidateSinceMs = candidateSinceMs?.plus(gapDuration)
+        pressStartedMs = pressStartedMs?.plus(gapDuration)
+        contactUnknownSinceMs = null
+    }
+
     private fun cancelPressIntent(clearNeutralArm: Boolean) {
         candidateSinceMs = null
         candidateActionX = 0.5f
@@ -686,6 +713,10 @@ class PointerTracker(
     }
 
     fun onControlHandDiscontinuity() {
+        resetPresence(resetMotionFilter = true)
+    }
+
+    fun resetForControlHandChange() {
         resetPresence(resetMotionFilter = true)
     }
 
