@@ -14,14 +14,16 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        # Pinning actions/checkout@v4 to full commit SHA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Run Claude PR Review
-        uses: anthropics/claude-code-action@v1
+        # Pinning anthropics/claude-code-action@v1 to full commit SHA
+        uses: anthropics/claude-code-action@cfc3eb2a297e5df0efcd8ea6451e223ed33ba20e
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
-            Analyze this Pull Request for potential bugs, security flaws, or code quality issues.
-            Leave clear, constructive comments directly on relevant code lines.
+            Analyze PR #${{ github.event.pull_request.number }} for potential bugs, security flaws, and performance issues.
+            Provide constructive feedback as inline comments where appropriate.
           claude_args: |
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*)"
