@@ -25,28 +25,29 @@ android {
 
     sourceSets.getByName("main").res.srcDir(generatedFontResDir)
 
-signingConfigs {
-        create("preview") {
-            storeFile = rootProject.file("keystore/airgesture-preview.jks")
-            storePassword = "android"
-            keyAlias = "airgesturepreview"
-            keyPassword = "android"
-        }
+    // Debug builds use Android's ephemeral debug keystore. A preview/release
+    // keystore must never be required from, or embedded in, source control.
+    signingConfigs {
         create("release") {
-            storeFile = System.getenv("RELEASE_KEYSTORE_PATH")?.let { rootProject.file(it) }
-            storePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD")
-            keyAlias = System.getenv("RELEASE_KEY_ALIAS")
-            keyPassword = System.getenv("RELEASE_KEY_PASSWORD")
+            val keystorePath = providers.environmentVariable("RELEASE_KEYSTORE_PATH").orNull
+            if (!keystorePath.isNullOrBlank()) {
+                storeFile = rootProject.file(keystorePath)
+                storePassword = providers.environmentVariable("RELEASE_KEYSTORE_PASSWORD").orNull
+                keyAlias = providers.environmentVariable("RELEASE_KEY_ALIAS").orNull
+                keyPassword = providers.environmentVariable("RELEASE_KEY_PASSWORD").orNull
+            }
         }
     }
 
     buildTypes {
         getByName("debug") {
-            signingConfig = signingConfigs.getByName("preview")
+            // Deliberately use the Android debug key instead of a repository key.
+            isDebuggable = true
         }
 
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
