@@ -7,14 +7,14 @@ Use this skill for all AERMOTUS/AERGIS implementation, debugging, refactoring, a
 1. Inspect the live repository and active branch before changing code.
 2. Treat GitHub/GitHub Actions as the objective source of truth.
 3. Establish root cause from evidence before editing production code.
-4. Make the smallest justified change; avoid speculative fixes and feature creep.
+4. Make the justified change/changes; avoid speculative fixes and feature creep.
 5. Add or update regression tests for every reproducible defect.
 6. Validate with repository tests, lint/build, and CI where available.
 7. Report separately what is implemented, what CI proves, and what remains unverified on hardware.
 8. Never claim a fix, build, APK, or test passed without evidence.
 
 ## Engineering priorities
-- Pointer stability and positional accuracy first.
+- Pointer stability,gesture mapping and recognition and positional accuracy first.
 - Reduce false positives and false negatives.
 - Preserve causal/timestamp correctness and fail-safe behavior.
 - Prefer deterministic, testable policy/filter components.
