@@ -8,7 +8,7 @@ Use this skill for GitHub Actions validation, failed-run diagnosis, APK verifica
 2. Check commit status and workflow result before claiming success.
 3. If failed, inspect the failing job and actual error output.
 4. Trace the failure to source/test/workflow/configuration root cause.
-5. Make one minimal justified correction at a time.
+5. Make justified corrections.
 6. Re-run CI and compare evidence against the prior failure.
 7. Verify APK existence, package/application ID, version name/code, signing, and expected artifact path when the workflow produces an APK.
 8. Treat physical Samsung Galaxy A54 verification as a separate gate; CI cannot prove camera FPS, MediaPipe result FPS, pointer latency/jitter, or real-world false-click behavior.
