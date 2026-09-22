@@ -23,7 +23,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    sourceSets.getByName("main").res.srcDir(generatedFontResDir)
+    sourceSets.getByName("main").res.directories.add(generatedFontResDir.get().asFile.path)
 
     // Debug builds use Android's ephemeral debug keystore. A preview/release
     // keystore must never be required from, or embedded in, source control.
@@ -63,7 +63,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions { jvmTarget = "17" }
+    kotlin { compilerOptions { jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17 } }
 
     packaging {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
