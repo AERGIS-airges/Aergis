@@ -11,7 +11,7 @@ val generatedFontResDir = layout.buildDirectory.dir("generated/aergis-font-res")
 
 android {
     namespace = "com.airgesture.control"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.airgesture.control"
